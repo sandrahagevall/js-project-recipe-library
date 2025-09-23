@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <title>Recipe Library</title>
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+</head>
+
+<body>
+  <header>
+    <h1>Recipe Library</h1>
+  </header>
+
+  <section class="options-container">
+    <form id="recipeFilters">
+      <!-- Kitchen filter form -->
+      <div class="form">
+        <h3>Filter on kitchen</h3>
+        <label class="btn-filter">
+          <input
+            type="radio"
+            name="kitchen"
+            value="all"
+          > All
+        </label>
+        <label class="btn-filter">
+          <input
+            type="radio"
+            name="kitchen"
+            value="italian"
+          >
+          Italian
+        </label>
+        <label class="btn-filter">
+          <input
+            type="radio"
+            name="kitchen"
+            value="thai"
+          >
+          Thai
+        </label>
+        <label class="btn-filter">
+          <input
+            type="radio"
+            name="kitchen"
+            value="mexican"
+          >
+          mexican
+        </label>
+        <label class="btn-filter">
+          <input
+            type="radio"
+            name="kitchen"
+            value="korean"
+          >
+          Korean
+        </label>
+      </div>
+
+      <!-- Sort filter form -->
+      <div class="form">
+        <h3>Sort on time</h3>
+        <label class="btn-sort">
+          <input
+            type="radio"
+            name="timeFilter"
+            value="ascending"
+          > Let's make it quick
+        </label>
+        <label class="btn-sort">
+          <input
+            type="radio"
+            name="timeFilter"
+            value="descending"
+          > I got time!
+        </label>
+      </div>
+    </form>
+
+    <!-- Surprise me button -->
+    <div class="form">
+      <h3>Need inspiration?</h3>
+      <button
+        class="btn-random"
+        id="randomBtn"
+      > Surprise me!
+      </button>
+    </div>
+  </section>
+
+
+  <script src="script.js"></script>
+</body>
+
+</html>
