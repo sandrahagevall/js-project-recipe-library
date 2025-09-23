@@ -1,0 +1,95 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Jost", sans-serif;
+}
+
+h1 {
+  color: #0018A4;
+  font-weight: 700;
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+h3 {
+  font-weight: 700;
+  font-size: 24px;
+}
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form h3 {
+  margin: 5px 0;
+}
+
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 5px 0 5px 0;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  display: none;
+}
+
+/* Styling för knappar (span inuti label) */
+.btn-filter span,
+.btn-sort span {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-weight: 500;
+  font-size: 16px;
+  color: #0018A4;
+  background-color: #CCFFE2;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-sort span {
+  background-color: #FFECEA;
+}
+
+.btn-filter span:hover,
+.btn-sort span:hover {
+  border: 2px solid #0018A4;
+  cursor: pointer;
+}
+
+/* Selected/checked effekt */
+.btn-filter input[type="checkbox"]:checked+span {
+  background-color: #0018A4;
+  color: white;
+  border: none;
+}
+
+.btn-sort input[type="radio"]:checked+span {
+  background-color: #FF6589;
+  color: white;
+  border: none;
+}
+
+/* Surprise me */
+.btn-random {
+  background-image: linear-gradient(135deg, #ae88ff 0%, #7f9fff 51%, #aa88ff 100%);
+  color: yellow;
+  font-weight: 500;
+  font-size: 16px;
+  padding: 8px 16px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-random:hover {
+  transform: scale(1.05);
+}
