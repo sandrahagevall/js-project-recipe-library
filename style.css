@@ -4,77 +4,78 @@
 
 body {
   font-family: "Jost", sans-serif;
+  padding: 0 14px;
+}
+
+header,
+.options-container,
+.recipes-container {
+  margin: 0 auto;
+  max-width: 1200px;
 }
 
 h1 {
   color: #0018A4;
   font-weight: 700;
   font-size: 40px;
-  margin-bottom: 10px;
 }
 
-h3 {
+h2 {
   font-weight: 700;
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .options-container {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  margin: 0 auto;
 }
 
-.form h3 {
-  margin: 5px 0;
-}
-
-.btn-group {
+.filter-buttons,
+.sorting-buttons,
+.random-buttons {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
-  gap: 10px;
-  margin: 5px 0 5px 0;
+  margin: 0;
+  gap: 12px;
 }
 
-input[type="radio"],
-input[type="checkbox"] {
-  display: none;
-}
-
-/* Styling för knappar (span inuti label) */
-.btn-filter span,
-.btn-sort span {
-  display: inline-block;
-  padding: 8px 16px;
-  border-radius: 50px;
-  font-weight: 500;
-  font-size: 16px;
-  color: #0018A4;
+.btn-filter {
   background-color: #CCFFE2;
+  color: #0018A4;
+  border-radius: 50px;
+  padding: 8px 16px;
+  gap: 10px;
+  text-align: center;
+  font-size: 18px;
   border: 2px solid transparent;
   transition: all 0.2s ease;
 }
 
-.btn-sort span {
-  background-color: #FFECEA;
-}
-
-.btn-filter span:hover,
-.btn-sort span:hover {
+.btn-filter:hover {
   border: 2px solid #0018A4;
   cursor: pointer;
+  transform: scale(1.05);
 }
 
-/* Selected/checked effekt */
-.btn-filter input[type="checkbox"]:checked+span {
-  background-color: #0018A4;
-  color: white;
-  border: none;
+.btn-sort {
+  background-color: #FFECEA;
+  color: #0018A4;
+  border-radius: 50px;
+  padding: 8px 16px;
+  gap: 10px;
+  text-align: center;
+  font-size: 18px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
 }
 
-.btn-sort input[type="radio"]:checked+span {
-  background-color: #FF6589;
-  color: white;
-  border: none;
+.btn-sort:hover {
+  border: 2px solid #0018A4;
+  cursor: pointer;
+  transform: scale(1.05);
 }
 
 /* Surprise me */
@@ -82,9 +83,11 @@ input[type="checkbox"] {
   background-image: linear-gradient(135deg, #ae88ff 0%, #7f9fff 51%, #aa88ff 100%);
   color: yellow;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 18px;
   padding: 8px 16px;
   border-radius: 50px;
+  margin-bottom: 12px;
+  border: 2px solid transparent;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -92,4 +95,99 @@ input[type="checkbox"] {
 
 .btn-random:hover {
   transform: scale(1.05);
+}
+
+.btn-filter.selected {
+  background-color: #0018A4;
+  color: white;
+}
+
+.btn-sort.selected {
+  background-color: #FF6589;
+  color: white;
+}
+
+.btn-random.selected {
+  backround-image: none;
+  background-color: #FFD700;
+  color: #0018A4;
+}
+
+/* Recipe-container */
+.recipes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  justify-content: center;
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.recipe-card {
+  border: 2px solid #e9e9e9;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+}
+
+.recipe-card:hover {
+  border: 2px solid #0018A4;
+  box-shadow: 0px 0px 30px 0px rgba(0, 24, 164, 0.2);
+}
+
+hr.solid {
+  border: none;
+  border-top: 2px solid #E9E9E9;
+  height: 1px;
+  width: 100%;
+  margin: 10px 0;
+  align-self: stretch;
+}
+
+.ingredients-title {
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+.card-image {
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  border-radius: 12px;
+}
+
+@media (min-width: 668px) {
+  h1 {
+    font-size: 64px;
+  }
+
+  h2 {
+    font-size: 28px;
+  }
+
+  header,
+  .options-container,
+  .recipes-container {
+    margin: 0;
+    padding-left: 14px;
+  }
+
+  .options-container {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 100px;
+    margin-bottom: 40px;
+  }
+
+  .recipes-container {
+    max-width: 800px;
+  }
+
+  .recipe-card {
+    gap: 16px;
+  }
 }

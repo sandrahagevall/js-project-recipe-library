@@ -24,122 +24,93 @@
   </header>
 
   <section class="options-container">
-    <!-- Kitchen filter form -->
-    <div class="form">
-      <h3>Filter on kitchen</h3>
-      <div class="btn-group">
-        <label class="btn-filter">
-          <input
-            type="checkbox"
-            name="kitchen"
-            value="all"
-          > <span>All</span>
-        </label>
-        <label class="btn-filter">
-          <input
-            type="checkbox"
-            name="kitchen"
-            value="italian"
-          >
-          <span>Italian</span>
-        </label>
-        <label class="btn-filter">
-          <input
-            type="checkbox"
-            name="kitchen"
-            value="thai"
-          >
-          <span>Thai</span>
-        </label>
-        <label class="btn-filter">
-          <input
-            type="checkbox"
-            name="kitchen"
-            value="mexican"
-          >
-          <span>Mexican</span>
-        </label>
-        <label class="btn-filter">
-          <input
-            type="checkbox"
-            name="kitchen"
-            value="korean"
-          >
-          <span>Korean</span>
-        </label>
+    <!-- Kitchen filter -->
+    <div class="filters">
+      <h2>Filter on kitchen</h2>
+      <div class="filter-buttons">
+        <button
+          class="btn-filter"
+          data-value="all"
+        >All</button>
+        <button
+          class="btn-filter"
+          data-value="italian"
+        >Italian</button>
+        <button
+          class="btn-filter"
+          data-value="thai"
+        >Thai</button>
+        <button
+          class="btn-filter"
+          data-value="mexican"
+        >Mexican</button>
+        <button
+          class="btn-filter"
+          data-value="korean"
+        >Korean</button>
       </div>
     </div>
 
-    <!-- Sort filter form -->
-    <div class="form">
-      <h3>Sort on time</h3>
-      <div class="btn-group">
-        <label class="btn-sort">
-          <input
-            type="radio"
-            name="timeFilter"
-            value="ascending"
-          > <span>A quick one</span>
-        </label>
-        <label class="btn-sort">
-          <input
-            type="radio"
-            name="timeFilter"
-            value="descending"
-          > <span>I got time</span>
-        </label>
+    <!-- Sort filter -->
+    <div class="sorting">
+      <h2>Sort on time</h2>
+      <div class="sorting-buttons">
+        <button
+          class="btn-sort"
+          data-value="ascending"
+        >A quick one</button>
+        <button
+          class="btn-sort"
+          data-value="descending"
+        >I got time</button>
       </div>
     </div>
 
     <!-- Surprise me button -->
-    <div class="form">
-      <h3>Need inspiration?</h3>
-      <button
-        class="btn-random"
-        id="randomBtn"
-      > Surprise me!
-      </button>
+    <div class="surprise">
+      <h2>Need inspiration?</h2>
+      <div class="random-buttons">
+        <button
+          class="btn-random"
+          id="randomBtn"
+        > Surprise me!
+        </button>
+      </div>
     </div>
   </section>
 
   <!-- Recipe cards -->
   <main>
     <section class="recipes-container">
-      <article class="recipe-grid-card">
-        <img
-          class="card-image"
-          src=""
-          alt=""
-        >
-        <h3>Some title</h3>
-        <p></p>
+      <article
+        class="recipe-card"
+        id="box1"
+      >
+        <h2>Temporary placeholder for filters/sorting options</h2>
+        <div
+          id="userSelection"
+          class="placeholder-output"
+        ></div>
       </article>
-      <article class="recipe-grid-card">
+      <article class="recipe-card">
         <img
           class="card-image"
-          src=""
-          alt=""
+          src="images/pizza.jpg"
+          alt="Pizza"
         >
-        <h3>Some title</h3>
-        <p></p>
-      </article>
-      <article class="recipe-grid-card">
-        <img
-          class="card-image"
-          src=""
-          alt=""
-        >
-        <h3>Some title</h3>
-        <p></p>
-      </article>
-      <article class="recipe-grid-card">
-        <img
-          class="card-image"
-          src=""
-          alt=""
-        >
-        <h3>Some title</h3>
-        <p></p>
+        <h2>Temporary placeholder recipe</h2>
+        <hr class="solid">
+        <p><strong>Cuisine:</strong> Italian<br>
+          <strong>Time:</strong> 40 minutes
+        </p>
+        <hr class="solid">
+        <p><strong class="ingredients-title">Ingredients</strong><br>
+          500 g pack bread mix<br>
+          2 tbsp. olive oil, plus a little extra for<br>
+          drizzling<br>
+          25 g parmesan (or vegetarian alternative), grated<br>
+          75 g dolcelatte cheese (or vegetarian alternative)
+        </p>
       </article>
     </section>
   </main>
