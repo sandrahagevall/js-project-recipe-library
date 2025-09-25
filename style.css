@@ -105,10 +105,11 @@ h2 {
 .btn-sort.selected {
   background-color: #FF6589;
   color: white;
+  border: none;
 }
 
 .btn-random.selected {
-  backround-image: none;
+  background-image: none;
   background-color: #FFD700;
   color: #0018A4;
 }
