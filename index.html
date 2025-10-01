@@ -21,6 +21,30 @@
 <body>
   <header>
     <h1>Recipe Library</h1>
+
+    <div class="favorites">
+      <button
+        id="favBtn"
+        class="btn-favorites"
+      >
+        <svg
+          class="heart-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          fill="red"
+          viewBox="0 0 24 24"
+        >
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 
+                 4.42 3 7.5 3c1.74 0 3.41 0.81 
+                 4.5 2.09C13.09 3.81 14.76 3 
+                 16.5 3 19.58 3 22 5.42 
+                 22 8.5c0 3.78-3.4 6.86-8.55 
+                 11.54L12 21.35z" />
+        </svg>
+        <span>Favorites</span>
+      </button>
+    </div>
   </header>
 
   <section class="options-container">
@@ -79,39 +103,11 @@
     </div>
   </section>
 
+
   <!-- Recipe cards -->
   <main>
-    <section class="recipes-container">
-      <article
-        class="recipe-card"
-        id="box1"
-      >
-        <h2>Temporary placeholder for filters/sorting options</h2>
-        <div
-          id="userSelection"
-          class="placeholder-output"
-        ></div>
-      </article>
-      <article class="recipe-card">
-        <img
-          class="card-image"
-          src="images/pizza.jpg"
-          alt="Pizza"
-        >
-        <h2>Temporary placeholder recipe</h2>
-        <hr class="solid">
-        <p><strong>Cuisine:</strong> Italian<br>
-          <strong>Time:</strong> 40 minutes
-        </p>
-        <hr class="solid">
-        <p><strong class="ingredients-title">Ingredients</strong><br>
-          500 g pack bread mix<br>
-          2 tbsp. olive oil, plus a little extra for<br>
-          drizzling<br>
-          25 g parmesan (or vegetarian alternative), grated<br>
-          75 g dolcelatte cheese (or vegetarian alternative)
-        </p>
-      </article>
+    <section id="recipeContainer">
+
     </section>
   </main>
 

@@ -2,83 +2,216 @@
 const filterButtons = document.querySelectorAll(".btn-filter")
 const sortButtons = document.querySelectorAll(".btn-sort")
 const randomButtons = document.getElementById("randomBtn")
-const userSelection = document.getElementById("userSelection")
+const recipesContainer = document.getElementById("recipeContainer")
+const favBtn = document.getElementById("favBtn")
 
-// Messages for kitchen
-const filterMessages = {
-  italian: "How about spaghetti carbonara?",
-  thai: "Maybe some Pad Thai?",
-  mexican: "Up for spicy?",
-  korean: "Cold noodles are popular on TikTok"
-}
-
-// Messages for sort
-const sortMessages = {
-  ascending: "Are you in a hurry?",
-  descending: "Nice, let's take it chill"
-}
-
-//Messages for surprise me
-const surpriseMessages = [
-  "🍣 Sushi bowl",
-  "🍝 Creamy chicken pasta",
-  "🌮 Beef tacos",
-  "🍛 Vegan curry",
-  "🥪 BBQ pulled pork sandwich",
-  "🥚 Shakshuka",
-  "🥗 Greek salad",
-  "🍜 Ramen noodles",
-  "🍫 Chocolate lava cake"
-]
-
+// global state variabler
 let selectedFilters = [] // All chosen filter-btns
 let selectedSort = null // Chosen sort-method
+let showFavoritesOnly = false
 
+// Data - recipes array
+const recipes = [
+  {
+    id: 1,
+    title: "Pesto Pasta",
+    image: "./pasta.jpg",
+    readyInMinutes: 25,
+    sourceUrl: "https://example.com/pesto-pasta",
+    cuisine: "Italian",
+    ingredients: [
+      "pasta",
+      "basil",
+      "parmesan cheese",
+      "garlic",
+      "pine nuts",
+      "olive oil",
+      "salt",
+      "black pepper"
+    ],
+    isFavorite: false
+  },
+  {
+    id: 2,
+    title: "Green Curry with Tofu",
+    image: "./thai-curry.jpg",
+    readyInMinutes: 40,
+    sourceUrl: "https://example.com/green-curry-tofu",
+    cuisine: "Thai",
+    ingredients: [
+      "tofu",
+      "green curry paste",
+      "coconut milk",
+      "bamboo shoots",
+      "bell peppers",
+      "basil",
+      "lime leaves",
+      "rice",
+      "salt"
+    ],
+    isFavorite: false
+  },
+  {
+    id: 3,
+    title: "Chicken Tacos",
+    image: "./mexican-tacos.jpg",
+    readyInMinutes: 20,
+    sourceUrl: "https://example.com/chicken-tacos",
+    cuisine: "Mexican",
+    ingredients: [
+      "corn tortillas",
+      "chicken breast",
+      "taco seasoning",
+      "lettuce",
+      "tomato",
+      "avocado",
+      "cheddar cheese"
+    ],
+    isFavorite: false
+  },
+  {
+    id: 4,
+    title: "Bibimbap",
+    image: "./korean-bibimbap.jpg",
+    readyInMinutes: 35,
+    sourceUrl: "https://example.com/bibimbap",
+    cuisine: "Korean",
+    ingredients: [
+      "rice",
+      "spinach",
+      "carrots",
+      "bean sprouts",
+      "shiitake mushrooms",
+      "egg",
+      "gochujang",
+      "sesame oil"
+    ],
+    isFavorite: false
+  }
+]
 
-const updateUserSelection = () => {
-  console.log("Updating user selection")
-  let messages = []
+const showRecipes = (recipesArray) => {
+  recipesContainer.innerHTML = ""
 
-  // Add message for chosen filter
-  if (selectedFilters.length > 0) {
-    selectedFilters.forEach(f => {
-      if (filterMessages[f]) messages.push(filterMessages[f])
-    })
+  if (recipesArray.length === 0) {
+    recipesContainer.innerHTML = `<p class="placeholder-output">😢 No recipes match your filter, try choosing another one</p>`
+    return
   }
 
-  // Add message for chosen sort
-  if (selectedSort) {
-    messages.push(sortMessages[selectedSort])
-  }
+  recipesArray.forEach(recipe => {
+    recipesContainer.innerHTML += `
+  <div class="recipe-card">
+    <h2>${recipe.title}</h2>
+    <img class="card-image" src="${recipe.image}" alt="${recipe.title}" />
+    <hr class="solid">
+    <p><strong>Cuisine:</strong> ${recipe.cuisine}<br>
+       <strong>Time:</strong> ${recipe.readyInMinutes} minutes<br>
+    </p>
+    <hr class="solid">
+    <p><strong class="ingredients-title">Ingredients</strong><br>
+       ${recipe.ingredients.join("<br>")}
+    </p>
+      <button class="btn-fav ${recipe.isFavorite ? "active" : ""}" data-id="${recipe.id}">
+        <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
+                   2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 
+                   4.5 2.09C13.09 3.81 14.76 3 
+                   16.5 3 19.58 3 22 5.42 
+                   22 8.5c0 3.78-3.4 6.86-8.55 
+                   11.54L12 21.35z"/>
+        </svg>
+      </button>
+  </div>
+`
+  })
 
-  // Show message or empty the text if nothing is chosen
-  if (messages.length === 0) {
-    userSelection.textContent = ""
-
-  } else {
-    userSelection.innerHTML = messages.join("<br>")
-  }
-
-  console.log("Current messages:", messages)
-  console.log("Selected filters:", selectedFilters)
-  console.log("Selected sort:", selectedSort)
+  addFavoriteListeners()
 }
+
+
+const addFavoriteListeners = () => {
+  const favoriteButtons = document.querySelectorAll(".btn-fav")
+
+  favoriteButtons.forEach(button => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation()
+
+
+      const recipeId = parseInt(button.dataset.id)
+      const recipe = recipes.find(r => r.id === recipeId)
+
+      if (recipe.isFavorite === false) {
+        recipe.isFavorite = true
+        button.classList.add("active")
+      } else {
+        recipe.isFavorite = false
+        button.classList.remove("active")
+      }
+      if (showFavoritesOnly === true) {
+        updateRecipes()
+      }
+    })
+  })
+}
+
+const updateRecipes = () => {
+  let filteredRecipes = recipes
+
+  if (selectedFilters.length > 0) {
+    filteredRecipes = filteredRecipes.filter(recipe =>
+      selectedFilters.includes(recipe.cuisine.toLowerCase())
+    )
+    console.log("Filtered recipes:", filteredRecipes)
+  }
+
+  if (showFavoritesOnly === true) {
+    filteredRecipes = filteredRecipes.filter(recipe => recipe.isFavorite === true)
+  }
+
+  filteredRecipes = sortRecipes(filteredRecipes)
+
+  showRecipes(filteredRecipes)
+}
+
+
+const sortRecipes = (recipesArray) => {
+  if (selectedSort === "ascending") {
+    return recipesArray.sort((a, b) => a.readyInMinutes - b.readyInMinutes)
+  }
+  if (selectedSort === "descending") {
+    return recipesArray.sort((a, b) => b.readyInMinutes - a.readyInMinutes)
+  }
+  return recipesArray
+}
+
 
 
 //Eventlistener
+favBtn.addEventListener("click", () => {
+  if (showFavoritesOnly === false) {
+    showFavoritesOnly = true
+    favBtn.classList.add("active")
+  } else {
+    showFavoritesOnly = false
+    favBtn.classList.remove("active")
+  }
+  updateRecipes()
+})
+
+
+
 filterButtons.forEach(button => {
   button.addEventListener("click", () => {
     const value = button.dataset.value
 
     //If "All" is chosen -> clear everything else
     if (value === "all") {
-      console.log("All button clicked = clear filters")
-
+      selectedFilters = []
       filterButtons.forEach(btn => btn.classList.remove("selected"))
       button.classList.add("selected")
-      selectedFilters = []
       randomButtons.classList.remove("selected")
-      userSelection.textContent = "You seem to like everything — why not try the 'Surprise Me' button?"
+      updateRecipes()
+
 
       console.log("Selected filters cleared")
       console.log("Random button deselected")
@@ -95,7 +228,7 @@ filterButtons.forEach(button => {
       // Maintain order of clicks
       if (button.classList.contains("selected")) {
 
-        // Add filter if not chosen
+        // Add filter if it's not already chosen
         if (selectedFilters.includes(value) === false) {
           selectedFilters.push(value);
         }
@@ -107,7 +240,7 @@ filterButtons.forEach(button => {
 
       console.log("Updated selected filters:", selectedFilters)
     }
-    updateUserSelection()
+    updateRecipes()
   })
 })
 
@@ -125,7 +258,12 @@ sortButtons.forEach(button => {
       sortButtons.forEach(btn => btn.classList.remove("selected"))
       button.classList.add("selected")
     }
-    updateUserSelection()
+
+    let filteredRecipes = recipes
+    if (selectedFilters.length > 0) {
+      filteredRecipes = recipes.filter(recipe => selectedFilters.includes(recipe.cuisine.toLocaleLowerCase()))
+    }
+    updateRecipes()
   })
 })
 
@@ -134,17 +272,19 @@ randomButtons.addEventListener("click", () => {
 
   // Deselect all kitchen filters
   filterButtons.forEach(btn => btn.classList.remove("selected"))
+  sortButtons.forEach(btn => btn.classList.remove("selected"))
 
   //Clear internal filter selection
   selectedFilters = []
+  selectedSort = null
 
-  const randomIndex = Math.floor(Math.random() * surpriseMessages.length)
-  const randomMessage = surpriseMessages[randomIndex]
+  const randomRecipe = recipes[Math.floor(Math.random() * recipes.length)]
 
-  console.log("Random selection:", randomMessage)
-
-  userSelection.innerHTML = `🎉 Surprise! How about: <strong>${randomMessage}</strong>?`
+  showRecipes([randomRecipe])
 })
+
+updateRecipes()
+
 
 
 
