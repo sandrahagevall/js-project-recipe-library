@@ -51,8 +51,7 @@ header {
 }
 
 header,
-.options-container,
-.recipes-container {
+.options-container {
   margin: 0 auto;
   max-width: 1200px;
 }
@@ -262,7 +261,7 @@ hr.solid {
 
   header,
   .options-container,
-  .recipes-container {
+  #recipeContainer {
     margin: 0;
     padding-left: 14px;
   }
@@ -270,12 +269,14 @@ hr.solid {
   .options-container {
     flex-direction: row;
     align-items: flex-start;
+    justify-content: space-between;
     gap: 100px;
     margin-bottom: 40px;
   }
 
-  .recipes-container {
-    max-width: 800px;
+  #recipeContainer {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
   }
 
   .placeholder-output {
@@ -297,5 +298,23 @@ hr.solid {
 
   hr.solid {
     margin: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* #recipeContainer {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 28px;
+    justify-content: center;
+  } */
+
+  @media (min-width: 1600px) {
+    header {
+      max-width: 1300px;
+    }
+
+    .options-container {
+      max-width: 1400px;
+    }
   }
 }

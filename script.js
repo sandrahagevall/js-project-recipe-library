@@ -15,7 +15,7 @@ const recipes = [
   {
     id: 1,
     title: "Pesto Pasta",
-    image: "./pasta.jpg",
+    image: "images/pizza.jpg",
     readyInMinutes: 25,
     sourceUrl: "https://example.com/pesto-pasta",
     cuisine: "Italian",
@@ -34,7 +34,7 @@ const recipes = [
   {
     id: 2,
     title: "Green Curry with Tofu",
-    image: "./thai-curry.jpg",
+    image: "images/pizza.jpg",
     readyInMinutes: 40,
     sourceUrl: "https://example.com/green-curry-tofu",
     cuisine: "Thai",
@@ -54,7 +54,7 @@ const recipes = [
   {
     id: 3,
     title: "Chicken Tacos",
-    image: "./mexican-tacos.jpg",
+    image: "images/pizza.jpg",
     readyInMinutes: 20,
     sourceUrl: "https://example.com/chicken-tacos",
     cuisine: "Mexican",
@@ -72,7 +72,7 @@ const recipes = [
   {
     id: 4,
     title: "Bibimbap",
-    image: "./korean-bibimbap.jpg",
+    image: "images/pizza.jpg",
     readyInMinutes: 35,
     sourceUrl: "https://example.com/bibimbap",
     cuisine: "Korean",
@@ -85,6 +85,42 @@ const recipes = [
       "egg",
       "gochujang",
       "sesame oil"
+    ],
+    isFavorite: false
+  },
+  {
+    id: 5,
+    title: "Spaghetti Carbonara",
+    image: "images/pizza.jpg",
+    readyInMinutes: 25,
+    sourceUrl: "https://example.com/spaghetti-carbonara",
+    cuisine: "Italian",
+    ingredients: [
+      "spaghetti",
+      "eggs",
+      "parmesan cheese",
+      "pancetta",
+      "black pepper",
+      "garlic"
+    ],
+    isFavorite: false
+  },
+  {
+    id: 6,
+    title: "Chicken Tikka Masala",
+    image: "images/pizza.jpg",
+    readyInMinutes: 50,
+    sourceUrl: "https://example.com/chicken-tikka-masala",
+    cuisine: "Indian",
+    ingredients: [
+      "chicken",
+      "yogurt",
+      "tomato puree",
+      "cream",
+      "garam masala",
+      "ginger",
+      "garlic",
+      "onion"
     ],
     isFavorite: false
   }
@@ -100,9 +136,9 @@ const showRecipes = (recipesArray) => {
 
   recipesArray.forEach(recipe => {
     recipesContainer.innerHTML += `
-  <div class="recipe-card">
+  <div class="recipe-card" data-url="${recipe.sourceUrl}">
+  <img class="card-image" src="${recipe.image}" alt="${recipe.title}" />
     <h2>${recipe.title}</h2>
-    <img class="card-image" src="${recipe.image}" alt="${recipe.title}" />
     <hr class="solid">
     <p><strong>Cuisine:</strong> ${recipe.cuisine}<br>
        <strong>Time:</strong> ${recipe.readyInMinutes} minutes<br>
@@ -123,9 +159,18 @@ const showRecipes = (recipesArray) => {
       </button>
   </div>
 `
+
   })
 
   addFavoriteListeners()
+
+  document.querySelectorAll(".recipe-card").forEach(card => {
+    card.addEventListener("click", (event) => {
+      if (event.target.closest(".btn-fav")) return
+      const url = card.dataset.url
+      if (url) window.open(url, "_blank")
+    })
+  })
 }
 
 
@@ -135,7 +180,6 @@ const addFavoriteListeners = () => {
   favoriteButtons.forEach(button => {
     button.addEventListener("click", (event) => {
       event.stopPropagation()
-
 
       const recipeId = parseInt(button.dataset.id)
       const recipe = recipes.find(r => r.id === recipeId)
@@ -169,7 +213,7 @@ const updateRecipes = () => {
   }
 
   filteredRecipes = sortRecipes(filteredRecipes)
-
+  console.log("Sorted recipes:", filteredRecipes)
   showRecipes(filteredRecipes)
 }
 
@@ -207,6 +251,9 @@ filterButtons.forEach(button => {
     //If "All" is chosen -> clear everything else
     if (value === "all") {
       selectedFilters = []
+      selectedSort = null
+      showFavoritesOnly = false
+      favBtn.classList.remove("active")
       filterButtons.forEach(btn => btn.classList.remove("selected"))
       button.classList.add("selected")
       randomButtons.classList.remove("selected")
