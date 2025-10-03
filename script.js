@@ -5,7 +5,7 @@ const randomButtons = document.getElementById("randomBtn")
 const recipesContainer = document.getElementById("recipeContainer")
 const favBtn = document.getElementById("favBtn")
 
-// global state variabler
+// Global state variables
 let selectedFilters = [] // All chosen filter-btns
 let selectedSort = null // Chosen sort-method
 let showFavoritesOnly = false
@@ -126,6 +126,7 @@ const recipes = [
   }
 ]
 
+// Functions
 const showRecipes = (recipesArray) => {
   recipesContainer.innerHTML = ""
 
@@ -159,7 +160,6 @@ const showRecipes = (recipesArray) => {
       </button>
   </div>
 `
-
   })
 
   addFavoriteListeners()
@@ -243,7 +243,6 @@ favBtn.addEventListener("click", () => {
 })
 
 
-
 filterButtons.forEach(button => {
   button.addEventListener("click", () => {
     const value = button.dataset.value
@@ -290,6 +289,7 @@ filterButtons.forEach(button => {
     updateRecipes()
   })
 })
+
 
 sortButtons.forEach(button => {
   button.addEventListener("click", () => {
