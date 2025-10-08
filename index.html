@@ -62,10 +62,6 @@
         >All</button>
         <button
           class="btn-filter"
-          data-value="italian"
-        >Italian</button>
-        <button
-          class="btn-filter"
           data-value="thai"
         >Thai</button>
         <button
@@ -74,8 +70,8 @@
         >Mexican</button>
         <button
           class="btn-filter"
-          data-value="korean"
-        >Korean</button>
+          data-value="mediterranean"
+        >Mediterranean</button>
         <button
           class="btn-filter"
           data-value="indian"
@@ -114,8 +110,19 @@
 
   <!-- Recipe cards -->
   <main>
-    <section id="recipeContainer">
+    <section>
+      <div
+        id="loading"
+        class="loading"
+        style="display: none;"
+      >
+        <div class="spinner"></div>
+        <p>Loading...</p>
+      </div>
 
+      <div id="recipeContainer">
+
+      </div>
     </section>
   </main>
 

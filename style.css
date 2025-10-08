@@ -246,6 +246,34 @@ hr.solid {
   border-radius: 12px;
 }
 
+#loading {
+  display: none;
+  text-align: center;
+  font-size: 1.5rem;
+  padding: 40px;
+  color: #0018A4;
+}
+
+.spinner {
+  margin: 0 auto 12px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #0018A4;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* ===========================================
    Media queries
    =========================================== */

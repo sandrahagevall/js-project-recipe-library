@@ -1,130 +1,100 @@
 // Get elements from HTML
 const filterButtons = document.querySelectorAll(".btn-filter")
 const sortButtons = document.querySelectorAll(".btn-sort")
-const randomButtons = document.getElementById("randomBtn")
+const randomButton = document.getElementById("randomBtn")
 const recipesContainer = document.getElementById("recipeContainer")
 const favBtn = document.getElementById("favBtn")
+const API_KEY = "dd6e45be84ea4b5ca75f926ee451806c"
+const URL = `https://api.spoonacular.com/recipes/complexSearch?number=30&apiKey=${API_KEY}&cuisine=Thai,Mexican,Mediterranean,Indian&addRecipeInformation=true&addRecipeInstructions=true`
+const loadingIndicator = document.getElementById("loading")
+
 
 // Global state variables
 let selectedFilters = [] // All chosen filter-btns
 let selectedSort = null // Chosen sort-method
 let showFavoritesOnly = false
+let allRecipes = []
 
-// Data - recipes array
-const recipes = [
-  {
-    id: 1,
-    title: "Pesto Pasta",
-    image: "images/pizza.jpg",
-    readyInMinutes: 25,
-    sourceUrl: "https://example.com/pesto-pasta",
-    cuisine: "Italian",
-    ingredients: [
-      "pasta",
-      "basil",
-      "parmesan cheese",
-      "garlic",
-      "pine nuts",
-      "olive oil",
-      "salt",
-      "black pepper"
-    ],
-    isFavorite: false
-  },
-  {
-    id: 2,
-    title: "Green Curry with Tofu",
-    image: "images/pizza.jpg",
-    readyInMinutes: 40,
-    sourceUrl: "https://example.com/green-curry-tofu",
-    cuisine: "Thai",
-    ingredients: [
-      "tofu",
-      "green curry paste",
-      "coconut milk",
-      "bamboo shoots",
-      "bell peppers",
-      "basil",
-      "lime leaves",
-      "rice",
-      "salt"
-    ],
-    isFavorite: false
-  },
-  {
-    id: 3,
-    title: "Chicken Tacos",
-    image: "images/pizza.jpg",
-    readyInMinutes: 20,
-    sourceUrl: "https://example.com/chicken-tacos",
-    cuisine: "Mexican",
-    ingredients: [
-      "corn tortillas",
-      "chicken breast",
-      "taco seasoning",
-      "lettuce",
-      "tomato",
-      "avocado",
-      "cheddar cheese"
-    ],
-    isFavorite: false
-  },
-  {
-    id: 4,
-    title: "Bibimbap",
-    image: "images/pizza.jpg",
-    readyInMinutes: 35,
-    sourceUrl: "https://example.com/bibimbap",
-    cuisine: "Korean",
-    ingredients: [
-      "rice",
-      "spinach",
-      "carrots",
-      "bean sprouts",
-      "shiitake mushrooms",
-      "egg",
-      "gochujang",
-      "sesame oil"
-    ],
-    isFavorite: false
-  },
-  {
-    id: 5,
-    title: "Spaghetti Carbonara",
-    image: "images/pizza.jpg",
-    readyInMinutes: 25,
-    sourceUrl: "https://example.com/spaghetti-carbonara",
-    cuisine: "Italian",
-    ingredients: [
-      "spaghetti",
-      "eggs",
-      "parmesan cheese",
-      "pancetta",
-      "black pepper",
-      "garlic"
-    ],
-    isFavorite: false
-  },
-  {
-    id: 6,
-    title: "Chicken Tikka Masala",
-    image: "images/pizza.jpg",
-    readyInMinutes: 50,
-    sourceUrl: "https://example.com/chicken-tikka-masala",
-    cuisine: "Indian",
-    ingredients: [
-      "chicken",
-      "yogurt",
-      "tomato puree",
-      "cream",
-      "garam masala",
-      "ginger",
-      "garlic",
-      "onion"
-    ],
-    isFavorite: false
+
+// Fetch data from API or localStorage
+
+const fetchData = async () => {
+  const lastFetch = localStorage.getItem("lastFetch")
+  const now = Date.now()
+
+  // If it's been less than 24 hours since the last fetch → use cache
+  if (lastFetch && (now - lastFetch < 24 * 60 * 60 * 1000)) {
+    const cachedRecipes = localStorage.getItem("allRecipes")
+    if (cachedRecipes) {
+      try {
+        allRecipes = JSON.parse(cachedRecipes)
+        console.log("Loaded recipes from cache")
+        updateRecipes()
+        loadingIndicator.style.display = "none"
+        return
+      } catch (e) {
+        console.warn("Could not parse cached recipes", e)
+        localStorage.removeItem("allRecipes")
+        localStorage.removeItem("lastFetch")
+      }
+    }
   }
-]
+  loadingIndicator.style.display = "block"
+  try {
+    console.log("Fetching recipes from API...")
+    const response = await fetch(URL)
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    const data = await response.json()
+    console.log("API response data:", data)
+
+    allRecipes = data.results.map(recipe => {
+      console.log("Processing recipe:", recipe)
+      const ingredients =
+        recipe.extendedIngredients?.map(ing => ing.original) ||
+        recipe.analyzedInstructions?.flatMap(instr =>
+          instr.steps?.flatMap(step =>
+            step.ingredients?.map(ing => ing.name) || []
+          ) || []
+        ) || []
+      console.log("Extracted ingredients:", ingredients)
+      return {
+        id: recipe.id,
+        title: recipe.title,
+        cuisine: (recipe.cuisines[0] || "Unknown").toLowerCase(),
+        readyInMinutes: recipe.readyInMinutes,
+        image: recipe.image,
+        sourceUrl: recipe.sourceUrl,
+        ingredients: [...new Set(ingredients)], // Remove duplicates
+        isFavorite: false
+      }
+    })
+
+    localStorage.setItem("allRecipes", JSON.stringify(allRecipes))
+    localStorage.setItem("lastFetch", now.toString())
+
+    updateRecipes()
+
+  } catch (err) {
+    const cachedRecipes = localStorage.getItem("allRecipes")
+    if (cachedRecipes) {
+      try {
+        allRecipes = JSON.parse(cachedRecipes)
+        console.log("Loaded recipes from cache due to error")
+        updateRecipes()
+      } catch (e) {
+        console.error("Could not parse cached recipes", e)
+        recipesContainer.innerHTML = "Could not load recipes 😢"
+        localStorage.removeItem("allRecipes")
+        localStorage.removeItem("lastFetch")
+      }
+    } else {
+      recipesContainer.innerHTML = "Could not load recipes 😢"
+    }
+    console.error(err)
+  } finally {
+    loadingIndicator.style.display = "none"
+  }
+}
 
 // Functions
 const showRecipes = (recipesArray) => {
@@ -161,45 +131,10 @@ const showRecipes = (recipesArray) => {
   </div>
 `
   })
-
-  addFavoriteListeners()
-
-  document.querySelectorAll(".recipe-card").forEach(card => {
-    card.addEventListener("click", (event) => {
-      if (event.target.closest(".btn-fav")) return
-      const url = card.dataset.url
-      if (url) window.open(url, "_blank")
-    })
-  })
-}
-
-
-const addFavoriteListeners = () => {
-  const favoriteButtons = document.querySelectorAll(".btn-fav")
-
-  favoriteButtons.forEach(button => {
-    button.addEventListener("click", (event) => {
-      event.stopPropagation()
-
-      const recipeId = parseInt(button.dataset.id)
-      const recipe = recipes.find(r => r.id === recipeId)
-
-      if (recipe.isFavorite === false) {
-        recipe.isFavorite = true
-        button.classList.add("active")
-      } else {
-        recipe.isFavorite = false
-        button.classList.remove("active")
-      }
-      if (showFavoritesOnly === true) {
-        updateRecipes()
-      }
-    })
-  })
 }
 
 const updateRecipes = () => {
-  let filteredRecipes = recipes
+  let filteredRecipes = [...allRecipes]
 
   if (selectedFilters.length > 0) {
     filteredRecipes = filteredRecipes.filter(recipe =>
@@ -219,13 +154,14 @@ const updateRecipes = () => {
 
 
 const sortRecipes = (recipesArray) => {
+  const sorted = [...recipesArray]
   if (selectedSort === "ascending") {
-    return recipesArray.sort((a, b) => a.readyInMinutes - b.readyInMinutes)
+    return sorted.sort((a, b) => a.readyInMinutes - b.readyInMinutes)
   }
   if (selectedSort === "descending") {
-    return recipesArray.sort((a, b) => b.readyInMinutes - a.readyInMinutes)
+    return sorted.sort((a, b) => b.readyInMinutes - a.readyInMinutes)
   }
-  return recipesArray
+  return sorted
 }
 
 
@@ -255,7 +191,7 @@ filterButtons.forEach(button => {
       favBtn.classList.remove("active")
       filterButtons.forEach(btn => btn.classList.remove("selected"))
       button.classList.add("selected")
-      randomButtons.classList.remove("selected")
+      randomButton.classList.remove("selected")
       updateRecipes()
 
 
@@ -305,17 +241,12 @@ sortButtons.forEach(button => {
       sortButtons.forEach(btn => btn.classList.remove("selected"))
       button.classList.add("selected")
     }
-
-    let filteredRecipes = recipes
-    if (selectedFilters.length > 0) {
-      filteredRecipes = recipes.filter(recipe => selectedFilters.includes(recipe.cuisine.toLocaleLowerCase()))
-    }
     updateRecipes()
   })
 })
 
-randomButtons.addEventListener("click", () => {
-  randomButtons.classList.toggle("selected")
+randomButton.addEventListener("click", () => {
+  randomButton.classList.toggle("selected")
 
   // Deselect all kitchen filters
   filterButtons.forEach(btn => btn.classList.remove("selected"))
@@ -324,13 +255,38 @@ randomButtons.addEventListener("click", () => {
   //Clear internal filter selection
   selectedFilters = []
   selectedSort = null
+  showFavoritesOnly = false
+  favBtn.classList.remove("active")
 
-  const randomRecipe = recipes[Math.floor(Math.random() * recipes.length)]
+  const randomRecipe = allRecipes[Math.floor(Math.random() * allRecipes.length)]
 
   showRecipes([randomRecipe])
 })
 
-updateRecipes()
+recipesContainer.addEventListener("click", (event) => {
+  const favButton = event.target.closest(".btn-fav")
+  if (favButton) {
+    event.stopPropagation()
+    const recipeId = parseInt(favButton.dataset.id)
+    const recipe = allRecipes.find(r => r.id === recipeId)
+    if (!recipe) return
+    recipe.isFavorite = !recipe.isFavorite
+    favButton.classList.toggle("active", recipe.isFavorite)
+    localStorage.setItem("allRecipes", JSON.stringify(allRecipes))
+    if (showFavoritesOnly) updateRecipes()
+    return
+  }
+
+  const recipeCard = event.target.closest(".recipe-card")
+  if (recipeCard) {
+    const url = recipeCard.dataset.url
+    if (url) window.open(url, "_blank", "noopener noreferrer")
+  }
+})
+
+//Initial fetch
+
+fetchData()
 
 
 
