@@ -69,7 +69,7 @@ const fetchData = async () => {
         readyInMinutes: recipe.readyInMinutes,
         image: recipe.image,
         sourceUrl: recipe.sourceUrl,
-        ingredients: [...new Set(ingredients)], // ta bort dubbletter
+        ingredients: [...new Set(ingredients)], // removes duplicates 
         isFavorite: false
       }
     })
@@ -136,7 +136,7 @@ const showRecipes = (recipesArray) => {
       })
     }
 
-    // Fade in igen efter att nytt innehåll är inlagt
+    // Fade in again after new content is added
     recipesContainer.style.opacity = "1"
     recipesContainer.style.transform = "scale(1)"
   }, 150)
@@ -185,12 +185,14 @@ favBtn.addEventListener("click", () => {
   updateRecipes()
 })
 
+
 searchBtn.addEventListener("click", () => {
   searchInput.classList.toggle("active")
   searchInput.value = ""
   clearSearchBtn.classList.remove("active")
   searchInput.focus()
 })
+
 
 clearSearchBtn.addEventListener("click", () => {
   searchInput.value = ""
@@ -200,6 +202,7 @@ clearSearchBtn.addEventListener("click", () => {
   }
   updateRecipes()
 })
+
 
 searchInput.addEventListener("input", () => {
   const query = searchInput.value.toLowerCase().trim()
@@ -221,6 +224,7 @@ searchInput.addEventListener("input", () => {
   )
   showRecipes(searchedRecipes);
 })
+
 
 filterButtons.forEach(button => {
   button.addEventListener("click", () => {
@@ -317,7 +321,6 @@ recipesContainer.addEventListener("click", (event) => {
   }
 })
 
-//Initial fetch
 fetchData()
 
 

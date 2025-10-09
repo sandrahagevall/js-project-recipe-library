@@ -8,6 +8,9 @@ body {
   margin: 0;
 }
 
+/* ===========================================
+   Header 
+   =========================================== */
 h1 {
   color: #0018A4;
   font-weight: 700;
@@ -32,6 +35,7 @@ header {
   width: 100%;
 }
 
+/* Favorite recipes and btn  */
 .favorites {
   display: flex;
   align-items: center;
@@ -67,6 +71,7 @@ header {
   display: none;
 }
 
+/* Search field */
 .search-container {
   display: flex;
   align-items: center;
@@ -120,14 +125,13 @@ header {
   display: block;
 }
 
+/* ===========================================
+   Options container
+   =========================================== */
 h2 {
   font-weight: 700;
   font-size: 20px;
 }
-
-/* ===========================================
-   Options container
-   =========================================== */
 
 .options-container {
   display: flex;
@@ -304,6 +308,7 @@ hr.solid {
   border-radius: 12px;
 }
 
+/* Loading for recipes  */
 #loading {
   display: none;
   text-align: center;
@@ -367,10 +372,6 @@ hr.solid {
     font-size: 16px;
     width: 200px;
     opacity: 1;
-  }
-
-  #searchBtn {
-    display: none;
   }
 
   h2 {
