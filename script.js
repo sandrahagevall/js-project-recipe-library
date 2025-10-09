@@ -1,17 +1,20 @@
 // Get elements from HTML
+const favBtn = document.getElementById("favBtn")
+const searchInput = document.getElementById("searchInput")
+const searchBtn = document.getElementById("searchBtn")
+const clearSearchBtn = document.getElementById("clearSearchBtn")
 const filterButtons = document.querySelectorAll(".btn-filter")
 const sortButtons = document.querySelectorAll(".btn-sort")
 const randomButton = document.getElementById("randomBtn")
 const recipesContainer = document.getElementById("recipeContainer")
-const favBtn = document.getElementById("favBtn")
 const API_KEY = "dd6e45be84ea4b5ca75f926ee451806c"
-const URL = `https://api.spoonacular.com/recipes/complexSearch?number=30&apiKey=${API_KEY}&cuisine=Thai,Mexican,Mediterranean,Indian&addRecipeInformation=true&addRecipeInstructions=true&fillIngredients=true`
+const URL = `https://api.spoonacular.com/recipes/complexSearch?number=25&apiKey=${API_KEY}&cuisine=Thai,Mexican,Mediterranean,Indian&addRecipeInformation=true&addRecipeInstructions=true&fillIngredients=true`
 const loadingIndicator = document.getElementById("loading")
 
 
 // Global state variables
-let selectedFilters = [] // All chosen filter-btns
-let selectedSort = null // Chosen sort-method
+let selectedFilters = []
+let selectedSort = null
 let showFavoritesOnly = false
 let allRecipes = []
 
@@ -27,12 +30,10 @@ const fetchData = async () => {
     if (cachedRecipes) {
       try {
         allRecipes = JSON.parse(cachedRecipes)
-        console.log("Loaded recipes from cache")
         updateRecipes()
         loadingIndicator.style.display = "none"
         return
       } catch (e) {
-        console.warn("Could not parse cached recipes", e)
         localStorage.removeItem("allRecipes")
         localStorage.removeItem("lastFetch")
       }
@@ -40,15 +41,11 @@ const fetchData = async () => {
   }
   loadingIndicator.style.display = "block"
   try {
-    console.log("Fetching recipes from API...")
     const response = await fetch(URL)
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     const data = await response.json()
-    console.log("API response data:", data)
 
     allRecipes = data.results.map(recipe => {
-      console.log("Processing recipe:", recipe)
-
       let ingredients = []
 
       if (recipe.extendedIngredients && recipe.extendedIngredients.length > 0) {
@@ -64,9 +61,6 @@ const fetchData = async () => {
           ) || []
         )
       }
-
-      console.log("Extracted ingredients:", ingredients)
-
       return {
         id: recipe.id,
         title: recipe.title,
@@ -90,10 +84,8 @@ const fetchData = async () => {
     if (cachedRecipes) {
       try {
         allRecipes = JSON.parse(cachedRecipes)
-        console.log("Loaded recipes from cache due to error")
         updateRecipes()
       } catch (e) {
-        console.error("Could not parse cached recipes", e)
         recipesContainer.innerHTML = "Could not load recipes 😢"
         localStorage.removeItem("allRecipes")
         localStorage.removeItem("lastFetch")
@@ -101,7 +93,6 @@ const fetchData = async () => {
     } else {
       recipesContainer.innerHTML = "Could not load recipes 😢"
     }
-    console.error(err)
   } finally {
     loadingIndicator.style.display = "none"
   }
@@ -109,40 +100,48 @@ const fetchData = async () => {
 
 // Functions
 const showRecipes = (recipesArray) => {
-  recipesContainer.innerHTML = ""
+  const recipesContainer = document.getElementById("recipeContainer")
+  recipesContainer.style.opacity = "0"
+  recipesContainer.style.transform = "scale(0.95)"
 
-  if (recipesArray.length === 0) {
-    recipesContainer.innerHTML = `<p class="placeholder-output">😢 No recipes match your filter, try choosing another one</p>`
-    return
-  }
+  setTimeout(() => {
+    recipesContainer.innerHTML = ""
 
-  recipesArray.forEach(recipe => {
-    recipesContainer.innerHTML += `
-  <div class="recipe-card" data-url="${recipe.sourceUrl}">
-  <img class="card-image" src="${recipe.image}" alt="${recipe.title}" />
-    <h2>${recipe.title}</h2>
-    <hr class="solid">
-    <p><strong>Cuisine:</strong> ${recipe.cuisine}<br>
-       <strong>Time:</strong> ${recipe.readyInMinutes} minutes<br>
-    </p>
-    <hr class="solid">
-    <p><strong class="ingredients-title">Ingredients</strong><br>
-       ${recipe.ingredients.join("<br>")}
-    </p>
-      <button class="btn-fav ${recipe.isFavorite ? "active" : ""}" data-id="${recipe.id}">
-        <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
-          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
-                   2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 
-                   4.5 2.09C13.09 3.81 14.76 3 
-                   16.5 3 19.58 3 22 5.42 
-                   22 8.5c0 3.78-3.4 6.86-8.55 
-                   11.54L12 21.35z"/>
-        </svg>
-      </button>
-  </div>
-`
-  })
+    if (recipesArray.length === 0) {
+      recipesContainer.innerHTML = `<p class="placeholder-output">😢 No recipes match your filter, try choosing another one</p>`
+    } else {
+      recipesArray.forEach(recipe => {
+        recipesContainer.innerHTML += `
+          <div class="recipe-card" data-url="${recipe.sourceUrl}">
+            <img class="card-image" src="${recipe.image}" alt="${recipe.title}" />
+            <h2>${recipe.title}</h2>
+            <hr class="solid">
+            <p><strong>Cuisine:</strong> ${recipe.cuisine}<br>
+               <strong>Time:</strong> ${recipe.readyInMinutes} minutes<br></p>
+            <hr class="solid">
+            <p><strong class="ingredients-title">Ingredients</strong><br>
+               ${recipe.ingredients.join("<br>")}</p>
+            <button class="btn-fav ${recipe.isFavorite ? "active" : ""}" data-id="${recipe.id}">
+              <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
+                         2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 
+                         4.5 2.09C13.09 3.81 14.76 3 
+                         16.5 3 19.58 3 22 5.42 
+                         22 8.5c0 3.78-3.4 6.86-8.55 
+                         11.54L12 21.35z"/>
+              </svg>
+            </button>
+          </div>
+        `
+      })
+    }
+
+    // Fade in igen efter att nytt innehåll är inlagt
+    recipesContainer.style.opacity = "1"
+    recipesContainer.style.transform = "scale(1)"
+  }, 150)
 }
+
 
 const updateRecipes = () => {
   let filteredRecipes = [...allRecipes]
@@ -151,7 +150,6 @@ const updateRecipes = () => {
     filteredRecipes = filteredRecipes.filter(recipe =>
       selectedFilters.includes(recipe.cuisine.toLowerCase())
     )
-    console.log("Filtered recipes:", filteredRecipes)
   }
 
   if (showFavoritesOnly === true) {
@@ -159,7 +157,6 @@ const updateRecipes = () => {
   }
 
   filteredRecipes = sortRecipes(filteredRecipes)
-  console.log("Sorted recipes:", filteredRecipes)
   showRecipes(filteredRecipes)
 }
 
@@ -188,6 +185,42 @@ favBtn.addEventListener("click", () => {
   updateRecipes()
 })
 
+searchBtn.addEventListener("click", () => {
+  searchInput.classList.toggle("active")
+  searchInput.value = ""
+  clearSearchBtn.classList.remove("active")
+  searchInput.focus()
+})
+
+clearSearchBtn.addEventListener("click", () => {
+  searchInput.value = ""
+  clearSearchBtn.classList.remove("active")
+  if (window.innerWidth < 668) {
+    searchInput.classList.remove("active")
+  }
+  updateRecipes()
+})
+
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.toLowerCase().trim()
+
+  if (query !== "") {
+    clearSearchBtn.classList.add("active")
+  } else {
+    clearSearchBtn.classList.remove("active")
+    if (window.innerWidth < 668) {
+      searchInput.classList.remove("active")
+    }
+    updateRecipes()
+    return
+  }
+
+  const searchedRecipes = allRecipes.filter(recipe =>
+    recipe.title.toLowerCase().includes(query) ||
+    recipe.ingredients.join(", ").toLowerCase().includes(query)
+  )
+  showRecipes(searchedRecipes);
+})
 
 filterButtons.forEach(button => {
   button.addEventListener("click", () => {
@@ -203,11 +236,6 @@ filterButtons.forEach(button => {
       button.classList.add("selected")
       randomButton.classList.remove("selected")
       updateRecipes()
-
-
-      console.log("Selected filters cleared")
-      console.log("Random button deselected")
-
       return
 
     } else {
@@ -229,8 +257,6 @@ filterButtons.forEach(button => {
         // Remove filter when unclicked
         selectedFilters = selectedFilters.filter(f => f !== value);
       }
-
-      console.log("Updated selected filters:", selectedFilters)
     }
     updateRecipes()
   })
@@ -239,12 +265,9 @@ filterButtons.forEach(button => {
 
 sortButtons.forEach(button => {
   button.addEventListener("click", () => {
-    console.log("Sort button clicked:", button.dataset.value)
-
     if (selectedSort === button.dataset.value) {
       selectedSort = null
       button.classList.remove("selected")
-      console.log("Sort cleared")
 
     } else {
       selectedSort = button.dataset.value
