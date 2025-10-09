@@ -5,7 +5,7 @@ const randomButton = document.getElementById("randomBtn")
 const recipesContainer = document.getElementById("recipeContainer")
 const favBtn = document.getElementById("favBtn")
 const API_KEY = "dd6e45be84ea4b5ca75f926ee451806c"
-const URL = `https://api.spoonacular.com/recipes/complexSearch?number=30&apiKey=${API_KEY}&cuisine=Thai,Mexican,Mediterranean,Indian&addRecipeInformation=true&addRecipeInstructions=true`
+const URL = `https://api.spoonacular.com/recipes/complexSearch?number=30&apiKey=${API_KEY}&cuisine=Thai,Mexican,Mediterranean,Indian&addRecipeInformation=true&addRecipeInstructions=true&fillIngredients=true`
 const loadingIndicator = document.getElementById("loading")
 
 
@@ -17,7 +17,6 @@ let allRecipes = []
 
 
 // Fetch data from API or localStorage
-
 const fetchData = async () => {
   const lastFetch = localStorage.getItem("lastFetch")
   const now = Date.now()
@@ -49,22 +48,34 @@ const fetchData = async () => {
 
     allRecipes = data.results.map(recipe => {
       console.log("Processing recipe:", recipe)
-      const ingredients =
-        recipe.extendedIngredients?.map(ing => ing.original) ||
-        recipe.analyzedInstructions?.flatMap(instr =>
+
+      let ingredients = []
+
+      if (recipe.extendedIngredients && recipe.extendedIngredients.length > 0) {
+        ingredients = recipe.extendedIngredients.map(ing =>
+          ing.original.toLowerCase().trim() // ← Makes all ingredients lowercase and trims whitespace
+        )
+      } else if (recipe.analyzedInstructions && recipe.analyzedInstructions.length > 0) {
+        ingredients = recipe.analyzedInstructions.flatMap(instr =>
           instr.steps?.flatMap(step =>
-            step.ingredients?.map(ing => ing.name) || []
+            step.ingredients?.map(ing =>
+              ing.name.toLowerCase().trim() // ← Makes all ingredient names lowercase and trims whitespace
+            ) || []
           ) || []
-        ) || []
+        )
+      }
+
       console.log("Extracted ingredients:", ingredients)
+
       return {
         id: recipe.id,
         title: recipe.title,
-        cuisine: (recipe.cuisines[0] || "Unknown").toLowerCase(),
+        cuisine: ((recipe.cuisines?.[0] || "Unknown").charAt(0).toUpperCase() +
+          (recipe.cuisines?.[0] || "Unknown").slice(1).toLowerCase()),
         readyInMinutes: recipe.readyInMinutes,
         image: recipe.image,
         sourceUrl: recipe.sourceUrl,
-        ingredients: [...new Set(ingredients)], // Remove duplicates
+        ingredients: [...new Set(ingredients)], // ta bort dubbletter
         isFavorite: false
       }
     })
@@ -163,7 +174,6 @@ const sortRecipes = (recipesArray) => {
   }
   return sorted
 }
-
 
 
 //Eventlistener
@@ -285,7 +295,6 @@ recipesContainer.addEventListener("click", (event) => {
 })
 
 //Initial fetch
-
 fetchData()
 
 
