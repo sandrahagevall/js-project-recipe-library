@@ -349,6 +349,7 @@ hr.solid {
 
   h1 {
     font-size: 40px;
+    padding-left: 20px;
   }
 
   .header-actions {
@@ -390,10 +391,11 @@ hr.solid {
     justify-content: space-between;
     gap: 100px;
     margin-bottom: 40px;
+    padding-left: 40px;
   }
 
   #recipeContainer {
-    padding: 18px;
+    padding: 0 40px 40px 40px;
   }
 
   .placeholder-output {
@@ -439,7 +441,6 @@ hr.solid {
   header,
   .options-container {
     max-width: 1400px;
-    padding: 0 18px;
   }
 
   #recipeContainer {
