@@ -31,6 +31,7 @@ const resetFilters = () => {
   randomButton.classList.remove("selected")
 }
 
+
 // Helper to extract and clean ingredients
 const extractIngredients = (recipe) => {
   const fromExtended = recipe.extendedIngredients?.map(i => i.original.toLowerCase().trim()) || []
@@ -49,7 +50,7 @@ const fetchData = async () => {
   const lastFetch = localStorage.getItem("lastFetch")
   const now = Date.now()
 
-  // If it's been less than 24 hours since the last fetch → use cache
+  // Use cached recipes if last fetch was under 24 hours ago
   if (lastFetch && (now - lastFetch < 24 * 60 * 60 * 1000)) {
     const cachedRecipes = localStorage.getItem("allRecipes")
     if (cachedRecipes) {
@@ -118,10 +119,9 @@ const fetchData = async () => {
   }
 }
 
+
 // ---------- CORE RENDERING FUNCTIONS ----------
 const showRecipes = (recipesArray) => {
-  const recipesContainer = document.getElementById("recipeContainer")
-
   // Add animation: fade out and scale down before updating content
   recipesContainer.style.opacity = "0"
   recipesContainer.style.transform = "scale(0.95)"
@@ -167,7 +167,6 @@ const showRecipes = (recipesArray) => {
 
 const updateRecipes = () => {
   let filteredRecipes = [...allRecipes]
-
   // Apply cuisine filters if selected
   if (selectedFilters.length > 0) {
     filteredRecipes = filteredRecipes.filter(recipe =>
@@ -240,7 +239,6 @@ searchInput.addEventListener("input", () => {
     updateRecipes()
     return
   }
-
   const searchedRecipes = allRecipes.filter(recipe =>
     recipe.title.toLowerCase().includes(query) ||
     recipe.ingredients.join(", ").toLowerCase().includes(query)
@@ -304,10 +302,10 @@ sortButtons.forEach(button => {
 
 randomButton.addEventListener("click", () => {
   if (randomButton.classList.contains("selected")) {
-
     randomButton.classList.remove("selected")
     resetFilters()
     updateRecipes()
+
   } else {
     resetFilters()
     randomButton.classList.add("selected")
