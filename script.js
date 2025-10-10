@@ -1,4 +1,4 @@
-// Get elements from HTML
+// ---------- GLOBAL ELEMENT REFERENCES ----------
 const favBtn = document.getElementById("favBtn")
 const searchInput = document.getElementById("searchInput")
 const searchBtn = document.getElementById("searchBtn")
@@ -7,18 +7,43 @@ const filterButtons = document.querySelectorAll(".btn-filter")
 const sortButtons = document.querySelectorAll(".btn-sort")
 const randomButton = document.getElementById("randomBtn")
 const recipesContainer = document.getElementById("recipeContainer")
-const API_KEY = "dd6e45be84ea4b5ca75f926ee451806c"
-const URL = `https://api.spoonacular.com/recipes/complexSearch?number=25&apiKey=${API_KEY}&cuisine=Thai,Mexican,Mediterranean,Indian&addRecipeInformation=true&addRecipeInstructions=true&fillIngredients=true`
 const loadingIndicator = document.getElementById("loading")
 
+const API_KEY = "dd6e45be84ea4b5ca75f926ee451806c"
+const URL = `https://api.spoonacular.com/recipes/complexSearch?number=25&apiKey=${API_KEY}&cuisine=Thai,Mexican,Mediterranean,Indian&addRecipeInformation=true&addRecipeInstructions=true&fillIngredients=true`
 
-// Global state variables
+
+// ---------- GLOBAL STATE ----------
 let selectedFilters = []
 let selectedSort = null
 let showFavoritesOnly = false
 let allRecipes = []
 
 
+// ---------- UTILITY FUNCTIONS ----------
+const resetFilters = () => {
+  selectedFilters = []
+  selectedSort = null
+  showFavoritesOnly = false
+  favBtn.classList.remove("active")
+  filterButtons.forEach(btn => btn.classList.remove("selected"))
+  sortButtons.forEach(btn => btn.classList.remove("selected"))
+  randomButton.classList.remove("selected")
+}
+
+// Helper to extract and clean ingredients
+const extractIngredients = (recipe) => {
+  const fromExtended = recipe.extendedIngredients?.map(i => i.original.toLowerCase().trim()) || []
+  const fromInstructions = recipe.analyzedInstructions?.flatMap(instr =>
+    instr.steps?.flatMap(step =>
+      step.ingredients?.map(i => i.name.toLowerCase().trim())
+    )
+  ) || []
+  return [...new Set([...fromExtended, ...fromInstructions])]
+}
+
+
+// ---------- DATA FETCHING ----------
 // Fetch data from API or localStorage
 const fetchData = async () => {
   const lastFetch = localStorage.getItem("lastFetch")
@@ -30,67 +55,62 @@ const fetchData = async () => {
     if (cachedRecipes) {
       try {
         allRecipes = JSON.parse(cachedRecipes)
+        // Update the UI with cached recipes
         updateRecipes()
         loadingIndicator.style.display = "none"
         return
       } catch (e) {
+        // If cached data is corrupted → remove it to force fresh fetch
         localStorage.removeItem("allRecipes")
         localStorage.removeItem("lastFetch")
       }
     }
   }
+  // Show loading spinner
   loadingIndicator.style.display = "block"
   try {
     const response = await fetch(URL)
+
+    //Check if API quota is reached
+    if (response.status === 402) {
+      recipesContainer.innerHTML = "<p class='placeholder-output'>🚫 API daily quota reached. We've hit our daily request limit for recipe data. Please try again tomorrow or reload later</p>"
+      return
+    }
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
     const data = await response.json()
 
-    allRecipes = data.results.map(recipe => {
-      let ingredients = []
-
-      if (recipe.extendedIngredients && recipe.extendedIngredients.length > 0) {
-        ingredients = recipe.extendedIngredients.map(ing =>
-          ing.original.toLowerCase().trim() // ← Makes all ingredients lowercase and trims whitespace
-        )
-      } else if (recipe.analyzedInstructions && recipe.analyzedInstructions.length > 0) {
-        ingredients = recipe.analyzedInstructions.flatMap(instr =>
-          instr.steps?.flatMap(step =>
-            step.ingredients?.map(ing =>
-              ing.name.toLowerCase().trim() // ← Makes all ingredient names lowercase and trims whitespace
-            ) || []
-          ) || []
-        )
-      }
-      return {
-        id: recipe.id,
-        title: recipe.title,
-        cuisine: ((recipe.cuisines?.[0] || "Unknown").charAt(0).toUpperCase() +
-          (recipe.cuisines?.[0] || "Unknown").slice(1).toLowerCase()),
-        readyInMinutes: recipe.readyInMinutes,
-        image: recipe.image,
-        sourceUrl: recipe.sourceUrl,
-        ingredients: [...new Set(ingredients)], // removes duplicates 
-        isFavorite: false
-      }
-    })
-
+    allRecipes = data.results.map(recipe => ({
+      id: recipe.id,
+      title: recipe.title,
+      cuisine: ((recipe.cuisines?.[0] || "Unknown").charAt(0).toUpperCase() +
+        (recipe.cuisines?.[0] || "Unknown").slice(1).toLowerCase()),
+      readyInMinutes: recipe.readyInMinutes,
+      image: recipe.image,
+      sourceUrl: recipe.sourceUrl,
+      ingredients: extractIngredients(recipe), // Extract ingredients via helper function
+      isFavorite: false
+    }))
+    // Save recipes to localStorage
     localStorage.setItem("allRecipes", JSON.stringify(allRecipes))
     localStorage.setItem("lastFetch", now.toString())
-
     updateRecipes()
 
   } catch (err) {
+    // Error handling: use cached data if API fetch fails
     const cachedRecipes = localStorage.getItem("allRecipes")
     if (cachedRecipes) {
       try {
         allRecipes = JSON.parse(cachedRecipes)
         updateRecipes()
       } catch (e) {
+        // If cached data is corrupted → clear it and show error message
         recipesContainer.innerHTML = "Could not load recipes 😢"
         localStorage.removeItem("allRecipes")
         localStorage.removeItem("lastFetch")
       }
     } else {
+      // No cached data available → show error message
       recipesContainer.innerHTML = "Could not load recipes 😢"
     }
   } finally {
@@ -98,14 +118,16 @@ const fetchData = async () => {
   }
 }
 
-// Functions
+// ---------- CORE RENDERING FUNCTIONS ----------
 const showRecipes = (recipesArray) => {
   const recipesContainer = document.getElementById("recipeContainer")
+
+  // Add animation: fade out and scale down before updating content
   recipesContainer.style.opacity = "0"
   recipesContainer.style.transform = "scale(0.95)"
 
   setTimeout(() => {
-    recipesContainer.innerHTML = ""
+    recipesContainer.innerHTML = "" // Clear existing recipes
 
     if (recipesArray.length === 0) {
       recipesContainer.innerHTML = `<p class="placeholder-output">😢 No recipes match your filter, try choosing another one</p>`
@@ -146,6 +168,7 @@ const showRecipes = (recipesArray) => {
 const updateRecipes = () => {
   let filteredRecipes = [...allRecipes]
 
+  // Apply cuisine filters if selected
   if (selectedFilters.length > 0) {
     filteredRecipes = filteredRecipes.filter(recipe =>
       selectedFilters.includes(recipe.cuisine.toLowerCase())
@@ -173,7 +196,7 @@ const sortRecipes = (recipesArray) => {
 }
 
 
-//Eventlistener
+// ---------- EVENT LISTENERS ----------
 favBtn.addEventListener("click", () => {
   if (showFavoritesOnly === false) {
     showFavoritesOnly = true
@@ -229,16 +252,10 @@ searchInput.addEventListener("input", () => {
 filterButtons.forEach(button => {
   button.addEventListener("click", () => {
     const value = button.dataset.value
-
-    //If "All" is chosen -> clear everything else
+    randomButton.classList.remove("selected")
     if (value === "all") {
-      selectedFilters = []
-      selectedSort = null
-      showFavoritesOnly = false
-      favBtn.classList.remove("active")
-      filterButtons.forEach(btn => btn.classList.remove("selected"))
+      resetFilters()
       button.classList.add("selected")
-      randomButton.classList.remove("selected")
       updateRecipes()
       return
 
@@ -269,6 +286,8 @@ filterButtons.forEach(button => {
 
 sortButtons.forEach(button => {
   button.addEventListener("click", () => {
+    randomButton.classList.remove("selected")
+
     if (selectedSort === button.dataset.value) {
       selectedSort = null
       button.classList.remove("selected")
@@ -282,23 +301,21 @@ sortButtons.forEach(button => {
   })
 })
 
+
 randomButton.addEventListener("click", () => {
-  randomButton.classList.toggle("selected")
+  if (randomButton.classList.contains("selected")) {
 
-  // Deselect all kitchen filters
-  filterButtons.forEach(btn => btn.classList.remove("selected"))
-  sortButtons.forEach(btn => btn.classList.remove("selected"))
-
-  //Clear internal filter selection
-  selectedFilters = []
-  selectedSort = null
-  showFavoritesOnly = false
-  favBtn.classList.remove("active")
-
-  const randomRecipe = allRecipes[Math.floor(Math.random() * allRecipes.length)]
-
-  showRecipes([randomRecipe])
+    randomButton.classList.remove("selected")
+    resetFilters()
+    updateRecipes()
+  } else {
+    resetFilters()
+    randomButton.classList.add("selected")
+    const randomRecipe = allRecipes[Math.floor(Math.random() * allRecipes.length)]
+    showRecipes([randomRecipe])
+  }
 })
+
 
 recipesContainer.addEventListener("click", (event) => {
   const favButton = event.target.closest(".btn-fav")
