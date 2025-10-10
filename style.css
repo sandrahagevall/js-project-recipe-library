@@ -385,10 +385,6 @@ hr.solid {
   }
 
   .options-container {
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 100px;
     margin-bottom: 40px;
     padding-left: 40px;
   }
@@ -417,6 +413,15 @@ hr.solid {
 
   hr.solid {
     margin: 0;
+  }
+}
+
+@media (min-width: 900px) {
+  .options-container {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 100px;
   }
 }
 
